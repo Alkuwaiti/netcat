@@ -6,44 +6,51 @@ import (
 )
 
 func main() {
-	// Listen for incoming connections
-	listener, err := net.Listen("tcp", "localhost:8080")
+	// Start listening on port 8080
+	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println("Error listening:", err.Error())
 		return
 	}
 	defer listener.Close()
+	fmt.Println("Server started. Listening on :8080")
 
-	fmt.Println("Server is listening on port 8080")
-
+	// Accept incoming connections
 	for {
-		// Accept incoming connections
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println("Error:", err)
-			continue
+			fmt.Println("Error accepting connection:", err.Error())
+			return
 		}
+		fmt.Println("Client connected:", conn.RemoteAddr())
 
-		// Handle client connection in a goroutine
-		go handleClient(conn)
+		// Handle connections in a new goroutine
+		go handleConnection(conn)
 	}
 }
 
-func handleClient(conn net.Conn) {
+func handleConnection(conn net.Conn) {
 	defer conn.Close()
 
-	// Create a buffer to read data into
-	buffer := make([]byte, 1024)
-
+	// Read data from the connection
 	for {
-		// Read data from the client
-		n, err := conn.Read(buffer)
+		buffer := make([]byte, 1024)
+		_, err := conn.Read(buffer)
 		if err != nil {
-			fmt.Println("Error:", err)
+			fmt.Println("Error reading:", err.Error())
 			return
 		}
 
-		// Process and use the data (here, we'll just print it)
-		fmt.Printf("Received: %s\n", buffer[:n])
+		// Print received message
+		fmt.Println("Received message:", string(buffer))
+
+		// Respond to the client
+		response := "Message received"
+		_, err = conn.Write([]byte(response))
+		if err != nil {
+			fmt.Println("Error writing:", err.Error())
+			return
+		}
 	}
+
 }
