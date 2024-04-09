@@ -1,0 +1,7 @@
+linux pic needs to be sent on its own, outside the channel
+
+probably define the channel on line 17 before first infinite loop
+
+give the handle connection access to that channel
+
+each channel can read and write to channel
