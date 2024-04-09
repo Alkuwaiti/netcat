@@ -1,3 +1,5 @@
+Server:=
+
 linux pic needs to be sent on its own, outside the channel
 
 probably define the channel on line 17 before first infinite loop
@@ -5,3 +7,48 @@ probably define the channel on line 17 before first infinite loop
 give the handle connection access to that channel
 
 each channel can read and write to channel
+
+handling the messages shown on the terminal should be server side
+
+Client :=
+
+Entering your name would be on the client side
+
+------------
+
+how would I synchronize read and writes?
+
+I need a struct for the Data: Date, Name, Message
+
+I have no idea how I would synchronize read and writes
+
+---------
+
+Send data from server to client (hello message, linux logo and prompt to enter name) could be on client side too? nah, doesn't make sense
+server ---> client
+
+Send back data from client to server (your name)
+client ---> server
+
+Keep that name somewhere
+
+* Probably server channel messages to client, all of them
+
+At this point, some go routines should probably kick off
+
+Next message a client sends should be sent to server
+
+Server would do shit with it including keeping the name and probably save it in a channel
+
+As new entries are in the channel, that would be sent to the client continuosly
+
+---------
+
+server ---> client
+
+client ---> server
+
+for messages in channel: (what if it was just one huge message? would that work?)
+    server ---> client
+    how would the client know how much to listen for? send length of messages in channel to set up a loop for that long?
+    client listens to <----- server x times
