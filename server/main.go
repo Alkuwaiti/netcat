@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
-	"server/welcome"
+	"server/functions"
 )
 
 func main() {
@@ -16,7 +16,7 @@ func main() {
 	defer listener.Close()
 	fmt.Println("Server started. Listening on :8080")
 
-	welcome.Welcome()
+	functions.Welcome()
 
 	// Accept incoming connections
 	for {

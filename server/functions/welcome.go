@@ -1,4 +1,4 @@
-package welcome
+package functions
 
 import (
 	"bufio"
