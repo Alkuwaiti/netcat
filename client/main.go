@@ -46,7 +46,7 @@ func main() {
 
 	currentTime := time.Now()
 
-	fmt.Println("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:")
+	fmt.Print("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:")
 
 	scanner.Scan()
 
