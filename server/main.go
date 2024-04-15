@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net"
+	"server/welcome"
 )
 
 func main() {
@@ -15,8 +16,11 @@ func main() {
 	defer listener.Close()
 	fmt.Println("Server started. Listening on :8080")
 
+	welcome.Welcome()
+
 	// Accept incoming connections
 	for {
+		// this is a blocking line of code
 		conn, err := listener.Accept()
 		if err != nil {
 			fmt.Println("Error accepting connection:", err.Error())

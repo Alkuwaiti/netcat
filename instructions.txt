@@ -1,6 +1,6 @@
 Server:=
 
-linux pic needs to be sent on its own, outside the channel
+linux pic needs to be sent on its own, outside the channel (maybe)
 
 probably define the channel on line 17 before first infinite loop
 
