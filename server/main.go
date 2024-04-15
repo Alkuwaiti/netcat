@@ -83,9 +83,9 @@ func handleConnection(conn net.Conn, initialMessage string, messagesChannel chan
 	currentTime := time.Now()
 
 	// this is a blocking line
-	messagesChannel <- Data{Name: name, Date: time.Now(), Message: message}
+	// messagesChannel <- Data{Name: name, Date: time.Now(), Message: message}
 
-	close(messagesChannel)
+	// close(messagesChannel)
 
 	fmt.Println("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:" + message)
 
