@@ -32,7 +32,22 @@ func main() {
 	// Scan for the next token (which by default is a line)
 	scanner.Scan()
 
-	// Retrieve the text the user entered
+	// Retrieve the user's name that they entered
+	name := scanner.Text()
+
+	_, err = conn.Write([]byte(name))
+	if err != nil {
+		fmt.Println("Error reading:", err.Error())
+		return
+	}
+
+	// retrieve all chat log before sending a new message
+
+	fmt.Print("Enter a message: ")
+
+	scanner.Scan()
+
+	// Retrieve the user's name that they entered
 	userInput := scanner.Text()
 
 	_, err = conn.Write([]byte(userInput))

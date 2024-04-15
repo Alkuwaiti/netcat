@@ -4,7 +4,14 @@ import (
 	"fmt"
 	"net"
 	"server/functions"
+	"time"
 )
+
+type Data struct {
+	Name    string
+	Date    time.Time
+	Message string
+}
 
 func main() {
 	// Start listening on port 8080
@@ -48,7 +55,22 @@ func handleConnection(conn net.Conn, initialMessage string) {
 		fmt.Println("Error reading response:", err.Error())
 		return
 	}
-	fmt.Print("this is the name: " + string(buffer))
+
+	name := string(buffer)
+	fmt.Println("this is the name: " + name)
+
+	// write to the client all previous messages
+
+	_, err = conn.Read(buffer)
+	if err != nil {
+		fmt.Println("Error reading response:", err.Error())
+		return
+	}
+	userInput := string(buffer)
+
+	currentTime := time.Now()
+
+	fmt.Println("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:" + userInput)
 
 	// infinite loop for the rest of the connection
 	// for {
