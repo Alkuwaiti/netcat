@@ -20,7 +20,7 @@ func main() {
 	// Create a new scanner reading from the standard input (os.Stdin)
 	scanner := bufio.NewScanner(os.Stdin)
 
-	// Read response from the server
+	// Read linux chat initial message from the server
 	buffer := make([]byte, 1024)
 	_, err = conn.Read(buffer)
 	if err != nil {
@@ -36,13 +36,14 @@ func main() {
 	// Retrieve the user's name that they entered
 	name := scanner.Text()
 
+	// write to server the name of the user
 	_, err = conn.Write([]byte(name))
 	if err != nil {
 		fmt.Println("Error reading:", err.Error())
 		return
 	}
 
-	// retrieve all chat log before sending a new message
+	// retrieve all chat log before sending a new message --- right here
 
 	currentTime := time.Now()
 
@@ -51,9 +52,9 @@ func main() {
 	scanner.Scan()
 
 	// Retrieve the user's name that they entered
-	userInput := scanner.Text()
+	message := scanner.Text()
 
-	_, err = conn.Write([]byte(userInput))
+	_, err = conn.Write([]byte(message))
 	if err != nil {
 		fmt.Println("Error reading:", err.Error())
 		return

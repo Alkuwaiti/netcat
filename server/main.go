@@ -25,6 +25,8 @@ func main() {
 
 	initialMessage := functions.Welcome()
 
+	messagesChannel := make(chan Data)
+
 	// Accept incoming connections
 	for {
 		// this is a blocking line of code
@@ -36,41 +38,56 @@ func main() {
 		fmt.Println("Client connected:", conn.RemoteAddr())
 
 		// Handle connections in a new goroutine
-		go handleConnection(conn, initialMessage)
+		go handleConnection(conn, initialMessage, messagesChannel)
 	}
 }
 
-func handleConnection(conn net.Conn, initialMessage string) {
+func handleConnection(conn net.Conn, initialMessage string, messagesChannel chan Data) {
+
+	// to handle closing connection
 	defer conn.Close()
 
+	// Send the client the initial message
 	_, err := conn.Write([]byte(initialMessage))
 	if err != nil {
 		fmt.Println("Error reading:", err.Error())
 		return
 	}
 
+	// define a buffer to re-use every now and then
 	buffer := make([]byte, 1024)
+
+	// read client's name
 	_, err = conn.Read(buffer)
 	if err != nil {
 		fmt.Println("Error reading response:", err.Error())
 		return
 	}
 
+	// save the name in a variable
 	name := string(buffer)
 	fmt.Println("this is the name: " + name)
 
-	// write to the client all previous messages
+	// write to the client all previous messages before infinite loop ---------- right here
 
+	// Read client's message
 	_, err = conn.Read(buffer)
 	if err != nil {
 		fmt.Println("Error reading response:", err.Error())
 		return
 	}
-	userInput := string(buffer)
+
+	// save user's message in a variable
+	message := string(buffer)
 
 	currentTime := time.Now()
 
-	fmt.Println("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:" + userInput)
+	// this is a blocking line
+	messagesChannel <- Data{Name: name, Date: time.Now(), Message: message}
+
+	close(messagesChannel)
+
+	fmt.Println("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:" + message)
 
 	// infinite loop for the rest of the connection
 	// for {
