@@ -69,6 +69,7 @@ func handleConnection(conn net.Conn, initialMessage string, messagesChannel chan
 	fmt.Println("this is the name: " + name)
 
 	// write to the client all previous messages before infinite loop ---------- right here
+	// recieve messages from channel here?
 
 	// Read client's message
 	_, err = conn.Read(buffer)
@@ -83,6 +84,7 @@ func handleConnection(conn net.Conn, initialMessage string, messagesChannel chan
 	currentTime := time.Now()
 
 	// this is a blocking line
+	// this is just sending to the channel, I need to either send this in a different goroutine or recieve it in a different goroutine
 	// messagesChannel <- Data{Name: name, Date: time.Now(), Message: message}
 
 	// close(messagesChannel)
