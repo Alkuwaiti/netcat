@@ -42,6 +42,14 @@ func handleConnection(conn net.Conn, initialMessage string) {
 		return
 	}
 
+	buffer := make([]byte, 1024)
+	_, err = conn.Read(buffer)
+	if err != nil {
+		fmt.Println("Error reading response:", err.Error())
+		return
+	}
+	fmt.Print("this is the name: " + string(buffer))
+
 	// infinite loop for the rest of the connection
 	// for {
 
