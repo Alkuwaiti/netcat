@@ -6,12 +6,12 @@ import (
 	"os"
 )
 
-func Welcome() {
+func Welcome() string {
 	file, err := os.Open("./welcomeText.txt")
 
 	if err != nil {
 		fmt.Println("Error:", err)
-		return
+		return ""
 	}
 	defer file.Close()
 
@@ -32,5 +32,6 @@ func Welcome() {
 		}
 	}
 
-	fmt.Print(linesFromFile)
+	return linesFromFile
+
 }

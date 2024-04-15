@@ -14,24 +14,18 @@ func main() {
 	}
 	defer conn.Close()
 
-	for {
-		// Send a message to the server
-		message := "Hello, server!"
-		_, err = conn.Write([]byte(message))
-		if err != nil {
-			fmt.Println("Error sending:", err.Error())
-			return
-		}
-		fmt.Println("Message sent:", message)
-
-		// Read response from the server
-		buffer := make([]byte, 1024)
-		_, err = conn.Read(buffer)
-		if err != nil {
-			fmt.Println("Error reading response:", err.Error())
-			return
-		}
-		fmt.Println("Response from server: " + string(buffer))
+	// Read response from the server
+	buffer := make([]byte, 1024)
+	_, err = conn.Read(buffer)
+	if err != nil {
+		fmt.Println("Error reading response:", err.Error())
+		return
 	}
+	fmt.Println("Response from server: ")
+	fmt.Println(string(buffer))
+
+	// for {
+
+	// }
 
 }
