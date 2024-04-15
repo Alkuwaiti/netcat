@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"time"
 )
 
 func main() {
@@ -43,7 +44,9 @@ func main() {
 
 	// retrieve all chat log before sending a new message
 
-	fmt.Print("Enter a message: ")
+	currentTime := time.Now()
+
+	fmt.Println("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:")
 
 	scanner.Scan()
 
