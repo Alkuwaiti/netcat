@@ -39,6 +39,7 @@ func main() {
 		fmt.Println("Error writing:", err.Error())
 		return
 	}
+	currentTime := time.Now()
 
 	// Goroutine to continuously read from the server
 	go func() {
@@ -48,13 +49,14 @@ func main() {
 				fmt.Println("Error reading from server:", err.Error())
 				return
 			}
+			fmt.Println()
 			fmt.Println(message)
+			fmt.Print("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:")
 		}
 	}()
 
 	// Continuosly send messages to the server
 	for {
-		currentTime := time.Now()
 
 		fmt.Print("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:")
 		message, _ := reader.ReadString('\n')

@@ -14,6 +14,10 @@ type Data struct {
 	LocalAddress net.Addr
 }
 
+// TODO :- Retrieve all messages before a client connects
+// TODO :- Handle ^C cases where client leaves
+// TODO :- Handle new joiners
+
 var connectedClients []net.Conn
 
 func main() {
