@@ -41,7 +41,7 @@ func main() {
 			// Send data to all connected clients
 			for _, conn := range connectedClients {
 				if conn.RemoteAddr() != data.LocalAddress {
-					_, err := conn.Write([]byte(fmt.Sprintf("[%s][%s]: %s\n", data.Date.Format("2006-01-02 15:04:05"), data.Name, data.Message)))
+					_, err := conn.Write([]byte(data.Message))
 					if err != nil {
 						fmt.Println("Error writing to client:", err.Error())
 					}
@@ -110,7 +110,7 @@ func handleConnection(conn net.Conn, initialMessage string, messagesChannel chan
 		fmt.Print("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:" + message)
 
 		// Send message to messagesChannel to broadcast to all clients
-		messagesChannel <- Data{Name: name, Date: currentTime, Message: message, LocalAddress: conn.RemoteAddr()}
+		messagesChannel <- Data{Name: name, Date: currentTime, Message: "[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:" + message, LocalAddress: conn.RemoteAddr()}
 	}
 
 }
