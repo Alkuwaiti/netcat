@@ -8,10 +8,13 @@ import (
 )
 
 type Data struct {
-	Name    string
-	Date    time.Time
-	Message string
+	Name         string
+	Date         time.Time
+	Message      string
+	LocalAddress net.Addr
 }
+
+var connectedClients []net.Conn
 
 func main() {
 	// Start listening on port 8080
@@ -26,6 +29,22 @@ func main() {
 	initialMessage := functions.Welcome()
 
 	messagesChannel := make(chan Data)
+
+	// Goroutine to handle sending messages to clients
+	go func() {
+		for {
+			data := <-messagesChannel
+			// Send data to all connected clients
+			for _, conn := range connectedClients {
+				if conn.RemoteAddr() != data.LocalAddress {
+					_, err := conn.Write([]byte(fmt.Sprintf("[%s][%s]: %s\n", data.Date.Format("2006-01-02 15:04:05"), data.Name, data.Message)))
+					if err != nil {
+						fmt.Println("Error writing to client:", err.Error())
+					}
+				}
+			}
+		}
+	}()
 
 	// Accept incoming connections
 	for {
@@ -68,32 +87,26 @@ func handleConnection(conn net.Conn, initialMessage string, messagesChannel chan
 	name := string(buffer)
 	fmt.Println("this is the name: " + name)
 
-	// write to the client all previous messages before infinite loop ---------- right here
-	// recieve messages from channel here?
+	// Add client to connected clients list
+	connectedClients = append(connectedClients, conn)
 
-	// Read client's message
-	_, err = conn.Read(buffer)
-	if err != nil {
-		fmt.Println("Error reading response:", err.Error())
-		return
+	// Handle receiving and sending messages
+	for {
+		// Read client's message
+		n, err := conn.Read(buffer)
+		if err != nil {
+			fmt.Println("Error reading response:", err.Error())
+			break
+		}
+
+		message := string(buffer[:n])
+
+		currentTime := time.Now()
+
+		fmt.Print("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:" + message)
+
+		// Send message to messagesChannel to broadcast to all clients
+		messagesChannel <- Data{Name: name, Date: currentTime, Message: message, LocalAddress: conn.RemoteAddr()}
 	}
-
-	// save user's message in a variable
-	message := string(buffer)
-
-	currentTime := time.Now()
-
-	// this is a blocking line
-	// this is just sending to the channel, I need to either send this in a different goroutine or recieve it in a different goroutine
-	// messagesChannel <- Data{Name: name, Date: time.Now(), Message: message}
-
-	// close(messagesChannel)
-
-	fmt.Println("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:" + message)
-
-	// infinite loop for the rest of the connection
-	// for {
-
-	// }
 
 }

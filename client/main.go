@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"strings"
 	"time"
 )
 
 func main() {
-	// Connect to server
+	// Connect to the server
 	conn, err := net.Dial("tcp", "localhost:8080")
 	if err != nil {
 		fmt.Println("Error connecting:", err.Error())
@@ -17,51 +18,58 @@ func main() {
 	}
 	defer conn.Close()
 
-	// Create a new scanner reading from the standard input (os.Stdin)
-	scanner := bufio.NewScanner(os.Stdin)
-
-	// Read linux chat initial message from the server
+	// Read initial message from the server
 	buffer := make([]byte, 1024)
-	_, err = conn.Read(buffer)
+	n, err := conn.Read(buffer)
 	if err != nil {
-		fmt.Println("Error reading response:", err.Error())
+		fmt.Println("Error reading:", err.Error())
 		return
 	}
+	fmt.Println("Server:", string(buffer[:n]))
 
-	fmt.Print(string(buffer))
+	// Read user's name from stdin
+	fmt.Print("Enter your name: ")
+	reader := bufio.NewReader(os.Stdin)
+	name, _ := reader.ReadString('\n')
+	name = strings.TrimSpace(name)
 
-	// Scan for the next token (which by default is a line)
-	scanner.Scan()
-
-	// Retrieve the user's name that they entered
-	name := scanner.Text()
-
-	// write to server the name of the user
+	// Send the name to the server
 	_, err = conn.Write([]byte(name))
 	if err != nil {
-		fmt.Println("Error reading:", err.Error())
+		fmt.Println("Error writing:", err.Error())
 		return
 	}
 
-	// retrieve all chat log before sending a new message --- right here
+	// Goroutine to continuously read from the server
+	go func() {
+		for {
+			message, err := bufio.NewReader(conn).ReadString('\n')
+			if err != nil {
+				fmt.Println("Error reading from server:", err.Error())
+				return
+			}
+			fmt.Println(message)
+		}
+	}()
 
-	currentTime := time.Now()
+	// Continuosly send messages to the server
+	for {
+		currentTime := time.Now()
 
-	fmt.Print("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:")
+		fmt.Print("[" + currentTime.Format("2006-01-02 15:04:05") + "][" + name + "]:")
+		message, _ := reader.ReadString('\n')
+		message = strings.TrimSpace(message)
 
-	scanner.Scan()
+		if strings.ToLower(message) == "exit" {
+			fmt.Println("Exiting...")
+			os.Exit(0)
+		}
 
-	// Retrieve the user's name that they entered
-	message := scanner.Text()
-
-	_, err = conn.Write([]byte(message))
-	if err != nil {
-		fmt.Println("Error reading:", err.Error())
-		return
+		// Send message to the server
+		_, err := conn.Write([]byte(message + "\n"))
+		if err != nil {
+			fmt.Println("Error writing:", err.Error())
+			return
+		}
 	}
-
-	// for {
-
-	// }
-
 }
