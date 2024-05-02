@@ -37,9 +37,11 @@ func main() {
 	// Goroutine to handle sending messages to clients
 	go func() {
 		for {
+			// recieve messages
 			data := <-messagesChannel
 			// Send data to all connected clients
 			for _, conn := range connectedClients {
+				// if the Remote Address only isn't the same as Local Address (Won't send to the same client their own message)
 				if conn.RemoteAddr() != data.LocalAddress {
 					_, err := conn.Write([]byte(data.Message))
 					if err != nil {
@@ -51,7 +53,7 @@ func main() {
 	}()
 
 	// Accept incoming connections
-	for {
+	for i := 0; i < 10; i++ {
 		// this is a blocking line of code
 		conn, err := listener.Accept()
 		if err != nil {
@@ -86,6 +88,8 @@ func handleConnection(conn net.Conn, initialMessage string, messagesChannel chan
 		fmt.Println("Error reading response:", err.Error())
 		return
 	}
+
+	// Send Client the previous messages here (in a different go routine? I think I need a waitGroup too)
 
 	// save the name in a variable
 	name := string(buffer)
